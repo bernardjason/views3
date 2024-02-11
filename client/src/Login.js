@@ -9,7 +9,7 @@ import {Cognito, ClientId, CognitoId,IdentityPoolId, CallBackUrl, userMappedToBu
 
 
 const REGION = 'eu-west-2'
-const loginUrl = 'http://localhost:3000/' // CallBackUrl // 'http://localhost:3000/'
+const loginUrl = CallBackUrl // CallBackUrl // 'http://localhost:3000/'
 
 function authenticateWithCognito() {
     const url = Cognito + '/login?client_id=' + ClientId + '&response_type=token&redirect_uri=' + loginUrl;
