@@ -1,0 +1,50 @@
+.background-customizable {
+    background-color : #fff;
+	color:white;
+}
+.submitButton-customizable {
+    background-color: #0d6efd;
+	color:white;
+}
+
+.submitButton-customizable:hover {
+    background-color: #fff;
+    color: #0d6efd;
+}
+
+.banner-customizable {
+    background-color: #fff
+}
+
+.errorMessage-customizable {
+    background-color: #fff;
+    color: #0d6efd;
+}
+
+
+
+.inputField-customizable {
+    background-color: #fff;
+    color: #0d6efd;
+}
+
+.inputField-customizable:focus {
+    color: black;
+}
+
+
+
+.legalText-customizable {
+    color: #0d6efd;
+}
+
+.passwordCheck-valid-customizable {
+    color: #0d6efd;
+}
+
+.passwordCheck-notValid-customizable {
+    color: red;
+}
+
+
+

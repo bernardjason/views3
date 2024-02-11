@@ -1,0 +1,48 @@
+.App {
+  text-align: center;
+  margin: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.Flash {
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+  background-color: rgb(198, 198, 206);
+  color: blue;
+  font-size: 1.875em;
+}
+
+.navbar,
+.nav,
+.navbar-default {
+    margin: 1px;
+    padding: 2px;
+    word-wrap: break-word !important;
+}
+
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.row {
+  padding-bottom: 20px;
+}
+
+.App-header {
+  background-color: #fff;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+
+}
+
+

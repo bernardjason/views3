@@ -1,0 +1,141 @@
+#!/bin/bash
+yum update -y
+yum install -y amazon-cloudwatch-agent vsftpd
+
+
+groupadd -g 2000 camera
+mkdir -p /home/ftp
+chgrp camera /home/ftp
+useradd -d /home/pushs3  -g camera pushs3
+chown pushs3 /home/ftp
+
+echo "CAMERA_USER" | sed -e 's/,/ /g' -e 's/|/\n/g'  | while read u account
+do
+    mkdir /home/ftp/${account}
+    chgrp camera /home/ftp/${account}
+    useradd -d /home/ftp/${account}/${u}  -g camera $u
+    echo "${u}:CAMERA_PASSWORD"  | chpasswd
+    echo exit > /home/ftp/${account}/${u}/.bashrc
+    chmod 770 /home/ftp/${account}/${u}
+done
+
+
+cd /home/pushs3
+wget -O ffmpeg.tar.xz https://johnvansickle.com/ffmpeg/builds/ffmpeg-git-arm64-static.tar.xz
+tar xvf ffmpeg.tar.xz
+mv ffmpeg-git-*-arm64-static/ffmpeg .
+rm -rf ffmpeg.tar.xz ffmpeg-git-*-static
+chmod 755 ffmpeg
+
+
+echo 'pushs3 ALL = (root) NOPASSWD: /usr/bin/chown'> /etc/sudoers.d/pushs3
+
+
+cat > /home/pushs3/pushs3.sh <<FOF
+
+WHERESCRIPT
+
+FOF
+
+chmod +x /home/pushs3/pushs3.sh
+
+cat > /etc/systemd/system/pushs3.service <<FOF
+[Unit]
+Description=pushs3 job
+
+[Service]
+Type=oneshot
+ExecStart=/bin/su pushs3 -c "/home/pushs3/pushs3.sh s3://BUCKET_AND_PROFILE/"
+FOF
+
+
+cat > /etc/systemd/system/pushs3.timer <<FOF
+[Unit]
+Description=run push
+
+[Timer]
+OnCalendar=*:0/2
+Persistent=true
+
+[Install]
+WantedBy=timers.target
+FOF
+
+systemctl enable pushs3.timer
+systemctl start pushs3.timer
+
+pip3 install boto3
+pip3 install requests
+
+cat > /etc/vsftpd/vsftpd.conf <<FOF
+anonymous_enable=NO
+local_enable=YES
+write_enable=YES
+local_umask=022
+dirmessage_enable=YES
+xferlog_enable=YES
+connect_from_port_20=YES
+xferlog_std_format=YES
+chroot_local_user=YES
+listen=NO
+listen_ipv6=YES
+pam_service_name=vsftpd
+userlist_enable=YES
+pasv_enable=YES
+pasv_min_port=10000
+pasv_max_port=10100
+allow_writeable_chroot=YES
+port_enable=YES
+pasv_address=TBD
+FOF
+
+cat > elastic.py <<FOF
+import boto3
+import requests
+import json
+response = requests.get('http://169.254.169.254/latest/meta-data/instance-id')
+instance_id = response.text
+
+response = requests.get('http://169.254.169.254/latest/dynamic/instance-identity/document')
+region = json.loads(response.text)['region']
+
+
+print("Instance id ",instance_id,"region",region)
+
+client = boto3.client('ec2',region)
+
+response = client.describe_addresses(
+    Filters=[
+        {
+            'Name': 'tag-key',
+            'Values': [
+                'views3',
+            ]
+        },
+    ],
+)
+publicIp= response['Addresses'][0]['PublicIp']
+allocationId = response['Addresses'][0]['AllocationId']
+
+response = client.associate_address(
+    AllocationId=allocationId,
+    InstanceId=instance_id,
+    AllowReassociation=False
+)
+offset=0
+with open("/etc/vsftpd/vsftpd.conf" ,"+r") as config:
+    for f in config.readlines():
+        if f.startswith("pasv_address="):
+            config.seek(0)
+            config.seek(offset)
+            config.write(f"pasv_address={publicIp}\n")
+            break
+        offset += len(f)
+
+FOF
+
+python3 elastic.py
+
+systemctl stop vsftpd
+systemctl start vsftpd
+systemctl enable vsftpd
