@@ -2,19 +2,20 @@
 
 This project allows multiple security cameras and groups of users to log onto a website to display the videos captured by their security cameras.
 
-![alt text](docs/1.png "Title")
-![alt text](docs/2.png "Title")
-![alt text](docs/3.png "Title")
+<img src="docs/1.png" alt="alt text" width="40%"/>
+<img src="docs/2.png" alt="alt text" width="40%"/>
+<img src="docs/3.png" alt="alt text" width="40%"/>
+
 
 An AWS stack is deployed that:
-    * creates a dedicated VPC
-    * creates a single EC2 in the VPC that provides a location for cameras to ftp upload video/jpg to. 
-    * patches EC2 automatically. 
-    * uses Cognito for authentication of users
-    * Cloudfront/S3 for a React website to view video/jpgs captured. 
-    * EC2 uses IPV4
+- creates a dedicated VPC    
+- creates a single EC2 in the VPC that provides a location for cameras to ftp upload video/jpg to.     
+- patches EC2 automatically.     
+- uses Cognito for authentication of users    
+- Cloudfront/S3 for a React website to view video/jpgs captured.     
+- EC2 uses IPV4
 
-![alt text](docs/views3.drawio.png "Title")
+<img src="docs/views3.drawio.png" alt="alt text" width="60%"/>
 
 ## prerequistes
 node --version
