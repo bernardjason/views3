@@ -23,10 +23,6 @@ import {
         maxAzs: 1,
       });
   
-
-  
-      // Allow SSH inbound traffic on TCP port 22
-      // this.sshSecurityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(22));
     }
   }
   

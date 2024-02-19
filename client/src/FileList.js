@@ -105,20 +105,20 @@ function FileList() {
         return date.toUTCString()
     }
 
-    const refreshSortIt = (a,b) =>  {
-        if (b.lastModified === undefined  ) {
-            // without converting to a number Chrome wasnt happy.
-            let response = stringToNumber(a.key) - stringToNumber(b.key)
-            response = response * -1
-            return response 
-        }
-        
-        return parseFloat(b.lastModified) -  parseFloat(a.lastModified)
-        
-    }
+
 
     useEffect( () => {
-
+        const refreshSortIt = (a,b) =>  {
+            if (b.lastModified === undefined  ) {
+                // without converting to a number Chrome wasnt happy.
+                let response = stringToNumber(a.key) - stringToNumber(b.key)
+                response = response * -1
+                return response 
+            }
+            
+            return parseFloat(b.lastModified) -  parseFloat(a.lastModified)
+            
+        }
         //setSorted(fileList)
         //setSortFlip( false )
         //onSortClick()
@@ -151,7 +151,11 @@ function FileList() {
         return total
     }
 
-    const sortIt = (a,b) =>  {
+
+    
+
+    const onSortClick = useCallback( () => {
+        const sortIt = (a,b) =>  {
             if (b.lastModified === undefined  ) {
                 // without converting to a number Chrome wasnt happy.
                 let response = stringToNumber(a.key) - stringToNumber(b.key)
@@ -165,10 +169,6 @@ function FileList() {
             }
             return parseFloat(b.lastModified) -  parseFloat(a.lastModified)
         }
-    
-
-    const onSortClick = useCallback( () => {
-        
 
         setSortFlip( ! sortFlip )
         const sortData = fileList.toSorted( sortIt)
@@ -202,7 +202,7 @@ function FileList() {
             setIcons(theIcons)
         })
         .catch(e => console.error(e));
-    }, [fileList] )
+    }, [bucket.bucket, fileList, s3client] )
 
     // https://stackoverflow.com/questions/39435395/reactjs-how-to-determine-if-the-application-is-being-viewed-on-mobile-or-deskto
     const [width, setWidth] = useState(window.innerWidth);

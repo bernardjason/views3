@@ -3,34 +3,16 @@ import { Construct } from 'constructs';
 import { VPCResources } from './vpc';
 import { ServerResources } from './server';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
-import { RemovalPolicy, Duration, Stack, Tags } from 'aws-cdk-lib';
-import { Bucket, HttpMethods, ObjectOwnership } from 'aws-cdk-lib/aws-s3';
-import { Source, BucketDeployment } from 'aws-cdk-lib/aws-s3-deployment';
-import {
-  Role,
-  ServicePrincipal,
-  ManagedPolicy,
-  PolicyDocument,
-  PolicyStatement,
-  FederatedPrincipal,
-} from 'aws-cdk-lib/aws-iam';
+import { Tags } from 'aws-cdk-lib';
 
-import {
- Distribution,
-} from 'aws-cdk-lib/aws-cloudfront';
-
-import * as customResources from 'aws-cdk-lib/custom-resources';
-import { S3Origin } from 'aws-cdk-lib/aws-cloudfront-origins';
-import { CloudFrontToS3 } from '@aws-solutions-constructs/aws-cloudfront-s3';
-import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import { PatchManager } from './patch';
-import { fstat, readFileSync } from 'fs';
+import { readFileSync } from 'fs';
 import S3Buckets from './s3buckets';
 import CognitoResources from './cognito';
 import { CloudfrontResources } from './cloudfront';
 
 
-const KEEP_FILES_FOR_SIXTY_DAYS = 60
+const KEEP_FILES_FOR_THIRTY_FIVE_DAYS = 35
 
 export class CdkStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -49,7 +31,7 @@ export class CdkStack extends cdk.Stack {
 
     Tags.of(this).add('views3', 'true');
 
-    const s3buckets = new S3Buckets(this,"views3-s3buckets",bucketPrefix,userName,KEEP_FILES_FOR_SIXTY_DAYS)
+    const s3buckets = new S3Buckets(this,"views3-s3buckets",bucketPrefix,userName,KEEP_FILES_FOR_THIRTY_FIVE_DAYS)
 
     const vpcResources = new VPCResources(this, 'views3-vpc');
     

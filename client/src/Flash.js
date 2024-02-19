@@ -1,12 +1,14 @@
 
-function Flash( {duration,switchedOn,children}) {
+function Flash( {duration,switchedOn,flash }) {
 
+    /*
     setTimeout( () => {
-        switchedOn(false)
+        switchedOn( { state:false } )
     },duration)
+    */
     return (
         <div className="Flash">          
-            {children}
+            {flash.message}
         </div>
     )
 }

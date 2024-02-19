@@ -21,11 +21,11 @@ function App() {
 
   const [bucketList,setBucketList] = useState([])
   const [bucket, setBucket] = useState( { bucket:"" , prefix:"/", previous:"/"})
-  const [flash,setFlash] = useState( false )
+  const [flash,setFlash] = useState( {state:false, message:""} )
  
   Login(setTokens,setS3Client,setBucketList,setBucket);
 
-  const [goUpToParent, changeUpdateDirectoryList , refreshFiles , fileList] = useFileLogic(s3client ,bucketList[0],bucket)
+  const [goUpToParent, changeUpdateDirectoryList , refreshFiles , fileList] = useFileLogic(s3client ,bucketList[0],bucket,setFlash)
 
   function logout() {
     setTokens( { isLoggedIn:false} )
@@ -33,7 +33,7 @@ function App() {
   }
 
   function refreshPressed() {
-    setFlash(true)
+    setFlash({state:true,message:"refreshing..."})
     refreshFiles()
   }
 
@@ -57,7 +57,7 @@ function App() {
             </Nav>
           </Container>
         </Navbar>
-            { flash && <Flash duration={2000} switchedOn={setFlash} >Refreshed</Flash>}
+            { flash && <Flash duration={2000} switchedOn={setFlash} flash={flash}></Flash>}
             <div className="App">
               
               { ! tokens.isLoggedIn && <header className="App-header"> Please log in</header>}                                           

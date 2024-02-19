@@ -6,7 +6,7 @@ import { S3AllObjects,  } from './S3AllObjects.js';
 import errorHandler from './useErrorHandler.js'
 
 
-function useFileLogic(s3client,firstBucket,bucket) {
+function useFileLogic(s3client,firstBucket,bucket,setFlash) {
 
     const [completeFileList,setCompleteFileList] = useState( new Map() )
     
@@ -14,7 +14,7 @@ function useFileLogic(s3client,firstBucket,bucket) {
 
     const refreshFiles  = () => {    
         console.log(`Refresh files ${JSON.stringify(bucket)}`)
-        S3AllObjects(s3client, setCompleteFileList, bucket.bucket,bucket.profile).catch(error => {
+        S3AllObjects(s3client, setCompleteFileList, bucket.bucket,bucket.profile,setFlash).catch(error => {
             console.log(JSON.stringify(error))
             errorHandler(error,"problem with refresh action")
         })            
@@ -23,7 +23,7 @@ function useFileLogic(s3client,firstBucket,bucket) {
     useEffect( () => {
         if ( s3client != null && bucket.bucket != null && firstBucket !== undefined ) {
 
-            S3AllObjects(s3client, setCompleteFileList, firstBucket, bucket.prefix).catch(error => {            
+            S3AllObjects(s3client, setCompleteFileList, firstBucket, bucket.prefix,setFlash).catch(error => {            
                 console.log(JSON.stringify(error))
                 errorHandler(error,"problem getting list of files")
             })

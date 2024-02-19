@@ -2,9 +2,7 @@
 
 This project allows multiple security cameras and groups of users to log onto a website to display the videos captured by their security cameras.
 
-<img src="docs/1.png" alt="alt text" width="40%"/>
-<img src="docs/2.png" alt="alt text" width="40%"/>
-<img src="docs/3.png" alt="alt text" width="40%"/>
+<img src="docs/1.png" alt="alt text" width="40%"/> <img src="docs/2.png" alt="alt text" width="40%"/> <img src="docs/3.png" alt="alt text" width="40%"/>
 
 
 An AWS stack is deployed that:
@@ -59,6 +57,11 @@ npm run build
 cd ../cdk
 npm run cdk-deploy
 ```
+
+CDK output gives the front end URL and ip address cameras should upload to
+
+<img src="docs/cdkout.png" alt="alt text" width="60%"/>
+
 
 Front end users are not added by CDK, nor can users sign add themselves. They must be provisioned with a script that creates the users with an initial password.
 They also get a profile set, this is used to map the user to a group. Cameras and users are in a group.

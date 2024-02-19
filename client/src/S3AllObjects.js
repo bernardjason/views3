@@ -7,7 +7,7 @@ const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 
 
 
-async function S3AllObjects(s3client, setCompleteFileList, bucket, prefix) {
+async function S3AllObjects(s3client, setCompleteFileList, bucket, prefix,setFlash) {
     const files = new Map();
     
     let previousDirectory = "/"
@@ -53,28 +53,39 @@ async function S3AllObjects(s3client, setCompleteFileList, bucket, prefix) {
                     }
                     current.push(record);
                 }
-            )        
+            ) 
+            
+            console.log("Chunk "+max+"  complete") 
         }
     }
     
     try {
+        const start = Date.now();
         while ( max < 999 && ContinuationToken !== undefined ) {
             max=max+1
+            // , StartAfter: "thedemo/camera1/2024/02/17/"
+            //const after = "thedemo/camera1/darlo.txt"
             const command = ContinuationToken === "first" ?
-                 new ListObjectsV2Command({ Bucket: bucket , Prefix:prefix, MaxKeys:1000 }) :            
-                new ListObjectsV2Command({ Bucket: bucket , Prefix:prefix, MaxKeys:1000 , ContinuationToken:ContinuationToken});
-            
+                 new ListObjectsV2Command({ Bucket: bucket , Prefix:prefix, MaxKeys:500 }) :            
+                new ListObjectsV2Command({ Bucket: bucket , Prefix:prefix, MaxKeys:500, ContinuationToken:ContinuationToken});
+            setFlash({ state:true,message:"refreshing... retrieve batch "+max})
             await s3client.send(command).then( processChunkOfFiles).catch(error => {
                 console.log(JSON.stringify(error))
                 errorHandler(error,"problem retrieving files")
-            })            
-        }
-        
-        files.delete("/") // I dont want root to be available.
+            }) 
+
+        }        
+        const millis = Date.now() - start;
+
+        console.log(`seconds elapsed = ${millis / 1000} Chunk processed ${max}`)
+                
+        //files.delete("/") // I dont want root to be available.
+        /*
         for(let k of files.keys() ) {
             console.log(`${JSON.stringify(files.get(k))}`)
         }
-
+        */
+        setFlash({state:false})
         setCompleteFileList(files)       
     } catch (error) {
         console.log(JSON.stringify(error))

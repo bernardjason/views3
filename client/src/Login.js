@@ -6,12 +6,19 @@ import {  CognitoIdentityProviderClient , GetUserCommand  } from "@aws-sdk/clien
 import errorHandler from './useErrorHandler.js'
 import {Cognito, ClientId, CognitoId,IdentityPoolId, CallBackUrl, userMappedToBucket} from './FromBuild.js'
 
-
-
 const REGION = 'eu-west-2'
-const loginUrl = CallBackUrl // CallBackUrl // 'http://localhost:3000/'
+
 
 function authenticateWithCognito() {
+    var loginUrl = CallBackUrl // CallBackUrl // 'http://localhost:3000/'
+
+    // only for dev!
+    try {
+        if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
+            loginUrl = 'http://localhost:3000/'        
+        }
+    } catch (err) {
+    }
     const url = Cognito + '/login?client_id=' + ClientId + '&response_type=token&redirect_uri=' + loginUrl;
     window.location.replace(url);
 }
