@@ -34,6 +34,12 @@
   padding-bottom: 20px;
 }
 
+.desktop-row {
+  display:flex;
+  overflow:'hidden';  
+  text-overflow: hidden;  
+}
+
 .App-header {
   background-color: #fff;
   min-height: 100vh;

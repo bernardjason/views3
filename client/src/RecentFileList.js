@@ -13,16 +13,14 @@ import Image from 'react-bootstrap/Image';
 import {  signUrl } from './S3AllObjects.js';
 import { BiFullscreen, BiFolder , BiDownArrow , BiUpArrow , BiFileBlank} from 'react-icons/bi';
 
-function FileList() {
+function RecentFileList() {
 
-    const {  s3client, bucket, goUpToParent, fileList , changeUpdateDirectoryList } = useContext(fileListContext);
+    const {  s3client, bucket, goUpToParent, fileList , changeUpdateDirectoryList , recentFileList} = useContext(fileListContext);
 
     const [normalModal, setNormalModal] = useState(false);
     const [fullscreenModal, setFullscreenModal] = useState(false);
-    const [sorted , setSorted] = useState();
     const [icons,setIcons] = useState( new Map() );
-    const [sortFlip , setSortFlip] = useState(true)
-    
+    const [sorted , setSorted] = useState();
   
     function onClickS3Object(what, destination, key,big) {
         if (key.endsWith(".png") || key.endsWith(".jpg") ) {
@@ -99,89 +97,37 @@ function FileList() {
         }
     }
 
+    function xxepochToString(e) {
+        const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+        var date = new Date(parseInt(e));
+        function pad(n) {
+            return String(n).padStart(2,'0')
+        }
+        
+        return `${days[date.getUTCDay()]},${pad(date.getUTCHours())}:${pad(date.getUTCMinutes())}:${pad(date.getUTCSeconds())} UTC`
+    }
+
     function epochToString(e) {
         var date = new Date(parseInt(e));
         
         return date.toUTCString()
     }
 
+    useEffect( () => {
+        const refreshSortIt = (a,b) =>  {           
+            return parseFloat(b.lastModified) -  parseFloat(a.lastModified)            
+        }
+
+        const sortData = recentFileList.toSorted( refreshSortIt)
+        setSorted(sortData )   
+
+    }, [ recentFileList , bucket.prefix] )
 
 
     useEffect( () => {
-        const refreshSortIt = (a,b) =>  {
-            if (b.lastModified === undefined  ) {
-                // without converting to a number Chrome wasnt happy.
-                let response = stringToNumber(a.key) - stringToNumber(b.key)
-                response = response * -1
-                return response 
-            }
-            
-            return parseFloat(b.lastModified) -  parseFloat(a.lastModified)
-            
-        }
-
-        const sortData = fileList.toSorted( refreshSortIt)
-        setSorted(sortData )   
-
-    }, [ fileList , bucket.prefix] )
-
-
-    function stringToNumber(s) {
-        if ( s == null ) {
-            return 0
-        }
-        let numbers = s.match( /\d+/g )               
-        let characters = []
-        if ( numbers == null ) {
-            return 0
-        }
-        for(let w of numbers) {            
-            for(let c of w.split("")  ) {     
-                characters.push(c)
-            }
-        }
-        let total = 0
-        let i=characters.length
-        for( let c of characters) {                      
-                total = total + Math.pow(10,i)*(c)
-                i--
-        }                
-        return total
-    }
-
-
-    
-
-    const onSortClick = useCallback( () => {
-        const sortIt = (a,b) =>  {
-            if (b.lastModified === undefined  ) {
-                // without converting to a number Chrome wasnt happy.
-                let response = stringToNumber(a.key) - stringToNumber(b.key)
-                if ( sortFlip) {
-                    response = response * -1
-                }
-                return response 
-            }
-            if ( sortFlip) {
-                return parseFloat(a.lastModified) -  parseFloat(b.lastModified)
-            }
-            return parseFloat(b.lastModified) -  parseFloat(a.lastModified)
-        }
-
-        setSortFlip( ! sortFlip )
-        const sortData = fileList.toSorted( sortIt)
-
-        console.log(`${JSON.stringify(sortData)}`)
-
-        setSorted(sortData )   
-        
-         
-    },[fileList, sortFlip ])
-
-     useEffect( () => {
         const theIcons = new Map();
         const promisesArray = []
-        for(let o of fileList) {
+        for(let o of recentFileList) {
             if ( o.key.endsWith("-icon.jpg")) {
                 promisesArray.push(signUrl(s3client, o.key, bucket.bucket, 30, (url) => {
                             theIcons.set(o.key.replace("-icon.jpg","-scaled.mp4"),url)
@@ -197,13 +143,28 @@ function FileList() {
             setIcons(theIcons)
         })
         .catch(e => console.error(e));
-    }, [bucket.bucket, fileList, s3client] )
+    }, [bucket.bucket, recentFileList, s3client] )
 
+    
+
+  
     // https://stackoverflow.com/questions/39435395/reactjs-how-to-determine-if-the-application-is-being-viewed-on-mobile-or-deskto
     const [width, setWidth] = useState(window.innerWidth);
 
     function handleWindowSizeChange() {
         setWidth(window.innerWidth);
+    }
+    function splitIntoDirectoryAndFile(fullname) {
+        const elements = fullname.split("/")
+        const filename = elements.pop()
+        const path=elements[0];//.join("/")
+        return {path,filename}
+    }
+    function getPath(fullname) {
+        return splitIntoDirectoryAndFile(fullname).path
+    }
+    function getFilename(fullname) {
+        return splitIntoDirectoryAndFile(fullname).filename
     }
     useEffect(() => {
         window.addEventListener('resize', handleWindowSizeChange);
@@ -213,87 +174,56 @@ function FileList() {
     }, []);
 
     const isMobile = width <= 768;
-    
+    const colClass = isMobile ?  "" : "desktop-row" ;
+
     return (
         
         <div  >
             <div>
-           
-           
-            </div>
-            <div>
      
 
-                <Container fluid>
-                
-                    <Row   >
-
-                        <Col  style={{display:'flex', justifyContent:'right' , }} ><Button variant="link" onClick={onSortClick}>timestamp 
-                        { sortFlip && <BiUpArrow></BiUpArrow> } 
-                        { ! sortFlip && <BiDownArrow></BiDownArrow> } 
-                        </Button>
-                        </Col>
-                    </Row>
-
-                    {
-                    bucket.previous !== bucket.prefix && <Row  key={bucket.previous}>
-                        { isMobile && 
-                        <Col style={{display:'flex', justifyContent:'left'}}  >
-                            <Button variant="link" onClick={goUpToParent}><b>Parent {bucket.previous}</b></Button>
-                        </Col>
-                        }
-                        { ! isMobile && 
-                        <Col >
-                            <Button variant="link" onClick={goUpToParent}><b>Parent {bucket.previous}</b></Button>
-                        </Col>
-                        }
-                    </Row>
-                    }
-                    
+                <Container fluid>                                     
                     {
                         sorted && sorted.filter((objectItem) => ! objectItem.key.endsWith("-icon.jpg")).map((objectItem) =>
-                           
                             <Row   key={objectItem.id + objectItem.key} >
                                 
-                                <Col style={{display:'flex', textOverflow:'ellipsis' , overflow:'hidden' }} >
+                                
+                                <Col className={colClass} lg={10}>
                                     { (! isMobile &&   ! objectItem.key.endsWith("/")) && 
                                         <Button size="lg" variant="link" onClick={() => onClickS3Object(objectItem.content, "image" + objectItem.key, objectItem.key,true)}>
                                             <BiFullscreen size={"40"}></BiFullscreen>                                        
                                             </Button>
                                     }   
                                     
-                                  
-
+                                    
                                     {
                                         icons.get(objectItem.key)  && <Image 
                                             onClick={() => onClickS3Object(objectItem.content, "image" + objectItem.key, objectItem.key,false)}
                                             src={icons.get(objectItem.key)} width={"100px"}thumbnail />
                                     }
-                                    {
-                                        (! icons.get(objectItem.key) &&  ! objectItem.key.endsWith("/") ) 
-                                             &&  <div  style={{paddingLeft:"0px", justifyContent:'right'}} > <BiFileBlank  size={"50px"} color="blue" /> </div>
-                                    }
+                            
+                                 
+                                    {  isMobile && getPath(objectItem.key.replace(bucket.prefix,""))}                                                                                                          
                                     
-
                                     <Button variant="link" 
-                                        onClick={() => onClickS3Object(objectItem.content, "image" + objectItem.key, objectItem.key,false)}
-                                         
-                                        >
-                                        { objectItem.key.endsWith("/") && <div><BiFolder></BiFolder> {objectItem.key}</div> }
-                                        { ! objectItem.key.endsWith("/") && objectItem.key.replace(bucket.prefix,"")}
+                                        onClick={() => onClickS3Object(objectItem.content, "image" + objectItem.key, objectItem.key,false)}                                         
+                                        >                                                                               
+                                        { getFilename(objectItem.key.replace(bucket.prefix,""))}
+                                        
                                     </Button>                                    
                                     
                                 </Col>
                                 { isMobile &&
-                                    <Col lg={5}>
+                                    <Col lg={2}>
                                     {  ! objectItem.key.endsWith("/") && epochToString(objectItem.lastModified)  }
                                     
                                     </Col>
                                 }
-                                { ( ! isMobile && ! objectItem.key.endsWith("/") ) &&
+                                {  ! isMobile  &&
                                     <Col lg={5}>
-                                    {  ! objectItem.key.endsWith("/") && epochToString(objectItem.lastModified)  }
-                                    
+                                        { getPath(objectItem.key.replace(bucket.prefix,""))+"" }
+                                        &nbsp;&nbsp;&nbsp;                                    
+                                        {  epochToString(objectItem.lastModified)  }                                                                        
                                     </Col>
                                 }
                                
@@ -335,4 +265,4 @@ function FileList() {
  
 }
 
-export {FileList};
+export default RecentFileList;

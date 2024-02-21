@@ -1,6 +1,7 @@
 import './App.css';
 import React, {  useState  } from "react";
 import {FileList,} from './FileList.js'
+import RecentFileList from './RecentFileList.js';
 import {Login, authenticateWithCognito, logoutFromCognito}  from './Login.js';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Container from 'react-bootstrap/Container';
@@ -25,7 +26,7 @@ function App() {
  
   Login(setTokens,setS3Client,setBucketList,setBucket);
 
-  const [goUpToParent, changeUpdateDirectoryList , refreshFiles , fileList] = useFileLogic(s3client ,bucketList[0],bucket,setFlash)
+  const [goUpToParent, changeUpdateDirectoryList , refreshFiles , fileList , recentFileList] = useFileLogic(s3client ,bucketList[0],bucket,setFlash)
 
   function logout() {
     setTokens( { isLoggedIn:false} )
@@ -39,7 +40,7 @@ function App() {
 
   return (
 
-    <fileListContext.Provider value={ { s3client, bucket, goUpToParent, fileList , changeUpdateDirectoryList , refreshFiles} }>
+    <fileListContext.Provider value={ { s3client, bucket, goUpToParent, fileList , changeUpdateDirectoryList , refreshFiles , recentFileList} }>
        
         <Navbar bg="primary" data-bs-theme="dark">
           
@@ -61,7 +62,7 @@ function App() {
             <div className="App">
               
               { ! tokens.isLoggedIn && <header className="App-header"> Please log in</header>}                                           
-              { tokens.isLoggedIn && <FileList ></FileList> }    
+              { tokens.isLoggedIn && <RecentFileList ></RecentFileList> }    
             </div>
     </fileListContext.Provider>
   );

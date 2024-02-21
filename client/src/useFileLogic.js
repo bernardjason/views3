@@ -12,9 +12,11 @@ function useFileLogic(s3client,firstBucket,bucket,setFlash) {
     
     const [fileList, setFileList] = useState([]);
 
+    const [recentFileList, setRecentFileList] = useState([]);
+
     const refreshFiles  = () => {    
         console.log(`Refresh files ${JSON.stringify(bucket)}`)
-        S3AllObjects(s3client, setCompleteFileList, bucket.bucket,bucket.profile,setFlash).catch(error => {
+        S3AllObjects(s3client, setCompleteFileList, setRecentFileList, bucket.bucket,bucket.profile,setFlash).catch(error => {
             console.log(JSON.stringify(error))
             errorHandler(error,"problem with refresh action")
         })            
@@ -23,12 +25,12 @@ function useFileLogic(s3client,firstBucket,bucket,setFlash) {
     useEffect( () => {
         if ( s3client != null && bucket.bucket != null && firstBucket !== undefined ) {
 
-            S3AllObjects(s3client, setCompleteFileList, firstBucket, bucket.prefix,setFlash).catch(error => {            
+            S3AllObjects(s3client, setCompleteFileList, setRecentFileList, firstBucket, bucket.prefix,setFlash).catch(error => {            
                 console.log(JSON.stringify(error))
                 errorHandler(error,"problem getting list of files")
             })
         }
-        }, [s3client, firstBucket , bucket] )
+        }, [s3client, firstBucket, bucket, setFlash] )
     
     const  setupParent = useCallback( (current) => {
         let elements = bucket.prefix.split("/");
@@ -76,7 +78,7 @@ function useFileLogic(s3client,firstBucket,bucket,setFlash) {
 
     useEffect(() => {changeUpdateDirectoryList()}, [completeFileList , changeUpdateDirectoryList]);   
 
-    return [goUpToParent,changeUpdateDirectoryList , refreshFiles , fileList  ]
+    return [goUpToParent,changeUpdateDirectoryList , refreshFiles , fileList , recentFileList ]
 }
 
 export default useFileLogic
