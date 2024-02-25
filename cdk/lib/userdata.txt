@@ -16,6 +16,9 @@ do
     useradd -d /home/ftp/${account}/${u}  -g camera $u
     echo "${u}:CAMERA_PASSWORD"  | chpasswd
     echo exit > /home/ftp/${account}/${u}/.bashrc
+    echo "welcome $(date)" > /home/ftp/${account}/${u}/welcome.txt
+    chown ${account} /home/ftp/${account}/${u}/welcome.txt
+    chgrp camera /home/ftp/${account}/${u}/welcome.txt
     chmod 770 /home/ftp/${account}/${u}
 done
 
