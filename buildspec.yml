@@ -32,4 +32,4 @@ phases:
         - npm run build
         - cd ../cdk
         - npm run cdk-deploy -- --require-approval never
-        - \[ "$AddDemoUser" = "yes" \] && node createUser.js  demoman thedemo HelloBernard1 ; EXITCODE=0
+        - \[ "$AddDemoUser" = "true" \] && node createUser.js  demoman thedemo HelloBernard1 ; EXITCODE=0
