@@ -13,7 +13,7 @@ phases:
        - echo "userName=${userName}" > cdk/views3.properties
        - echo "userPassword=${userPassword}" >> cdk/views3.properties
        - echo "bucketPrefix=${bucketPrefix}" >> cdk/views3.properties
-       - cdk --version
+       - cdk --version  
        - tsc --version
   build:
     commands:
@@ -21,6 +21,7 @@ phases:
         - cat cdk/views3.properties
         - mkdir client/build
         - cd cdk
+        - npm install
         - cdk bootstrap -y
         - npm install
         - npm run cdk-deploy -- --require-approval never
