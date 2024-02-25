@@ -31,4 +31,4 @@ phases:
         - npm run build
         - cd ../cdk
         - npm run cdk-deploy -- --require-approval never
-        - [ "$AddDemoUser" = "yes" ] && node createUser.js  demoman thedemo HelloBernard1
+        - \[ "$AddDemoUser" = "yes" \] && node createUser.js  demoman thedemo HelloBernard1
