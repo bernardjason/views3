@@ -32,9 +32,4 @@ phases:
         - npm run build
         - cd ../cdk
         - npm run cdk-deploy -- --require-approval never
-
-artifacts:
-   files:
-     - 'cdk-outputs.json'
-   base-directory: './cdk'
-   discard-paths: yes
+        - \[ "$AddDemoUser" = "yes" \] && node createUser.js  demoman thedemo HelloBernard1 ; EXITCODE=0
