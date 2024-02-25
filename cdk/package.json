@@ -10,8 +10,8 @@
 		"test": "jest",
 		"cdk": "cdk",
 		"cdk-deploy": "cdk deploy --outputs-file ./cdk-outputs.json",
-		"parse-client": "node parseCdkOutput.js",
-		"cognito-css": "node setlogo.js"
+		"parse-client": "nodejs parseCdkOutput.js",
+		"cognito-css": "nodejs setlogo.js"
 	},
 	"devDependencies": {
 		"@types/jest": "^29.5.11",
