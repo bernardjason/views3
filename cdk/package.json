@@ -10,8 +10,8 @@
 		"test": "jest",
 		"cdk": "cdk",
 		"cdk-deploy": "cdk deploy --outputs-file ./cdk-outputs.json",
-		"parse-client": "nodejs parseCdkOutput.js",
-		"cognito-css": "nodejs setlogo.js"
+		"parse-client": "node parseCdkOutput.js",
+		"cognito-css": "node setlogo.js"
 	},
 	"devDependencies": {
 		"@types/jest": "^29.5.11",
@@ -27,6 +27,7 @@
 		"@aws-solutions-constructs/aws-cloudfront-s3": "^2.47.0",
 		"aws-cdk-lib": "2.117.0",
 		"constructs": "^10.0.0",
+		"fs": "^0.0.1-security",
 		"source-map-support": "^0.5.21"
 	}
 }
