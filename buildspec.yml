@@ -32,4 +32,5 @@ phases:
         - npm run build
         - cd ../cdk
         - npm run cdk-deploy -- --require-approval never
-        - \[ "$AddDemoUser" = "true" \] && node createUser.js  demoman thedemo HelloBernard1 ; EXITCODE=0
+        - echo -e "To add a demouser run\n\n$(cat cdk-outputs.json  | jq -r ".ViewS3.demouser")\n"
+        - echo -e "Cloudfront url\n\n$(cat cdk-outputs.json  | jq -r ".ViewS3.displayurl")\n"

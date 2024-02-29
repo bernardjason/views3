@@ -24,13 +24,7 @@ Parameters:
   CdkViewS3BucketPrefix:
     Type: String
     Description: initial prefix for the buckets created. Must make buckets unique
-  AddDemoUser:
-    Type: String
-    Default: false
-    Description: enter yes to add a demo user
-    AllowedValues:
-      - yes
-      - no
+
 
 Resources:
 
@@ -231,9 +225,6 @@ Resources:
         - Name: bucketPrefix
           Type: PLAINTEXT
           Value: !Ref CdkViewS3BucketPrefix
-        - Name: AddDemoUser
-          Type: PLAINTEXT
-          Value: !Ref AddDemoUser
       Name: !Sub '${AWS::StackName}-BuildDeploy'
       ServiceRole: !Ref CodeBuildServiceRole
 
