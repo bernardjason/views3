@@ -71,7 +71,7 @@ function RecentFileList() {
     function splitIntoDirectoryAndFile(fullname) {
         const elements = fullname.split("/")
         const filename = elements.pop()
-        const path=elements[0];//.join("/")
+        const path=elements[1];//.join("/")
         return {path,filename}
     }
     function getPath(fullname) {
@@ -102,11 +102,11 @@ function RecentFileList() {
                             <Row   key={objectItem.id + objectItem.key} >
                                 
                                 
-                                <Col className={colClass} lg={10}>
+                                <Col className={colClass} style={{display:'flex', textOverflow:'ellipsis' , overflow:'hidden' }} lg={10}>
                                     { (! isMobile &&   ! objectItem.key.endsWith("/")) && 
                                         <Button size="lg" variant="link" onClick={() => onClickS3Object(objectItem.content,  objectItem.key,true,
                                                 s3client , bucket, setFullscreenModal , setNormalModal , changeUpdateDirectoryList)}>
-                                            <BiFullscreen size={"40"}></BiFullscreen>                                        
+                                            <BiFullscreen size={"40"}></BiFullscreen>                               
                                             </Button>
                                     }   
                                     
@@ -119,26 +119,27 @@ function RecentFileList() {
                                     }
                             
                                  
-                                    {  isMobile && getPath(objectItem.key.replace(bucket.prefix,""))}                                                                                                          
+                                                                                                                                            
                                     
                                     <Button variant="link" 
                                         onClick={() => onClickS3Object(objectItem.content, objectItem.key,false,
                                             s3client , bucket, setFullscreenModal , setNormalModal , changeUpdateDirectoryList)}                                         
-                                        >                                                                               
+                                        >       
+                                                                                                                
                                         { getFilename(objectItem.key.replace(bucket.prefix,""))}
                                         
                                     </Button>                                    
                                     
                                 </Col>
                                 { isMobile &&
-                                    <Col lg={2}>
-                                    {  ! objectItem.key.endsWith("/") && epochToString(objectItem.lastModified)  }
-                                    
+                                    <Col >
+                                        {  isMobile && getPath(objectItem.title)}&nbsp;&nbsp;&nbsp;            
+                                    {  ! objectItem.key.endsWith("/") && epochToString(objectItem.lastModified)  }                                       
                                     </Col>
                                 }
                                 {  ! isMobile  &&
                                     <Col lg={5}>
-                                        { getPath(objectItem.key.replace(bucket.prefix,""))+"" }
+                                        { getPath(objectItem.title)+"" }
                                         &nbsp;&nbsp;&nbsp;                                    
                                         {  epochToString(objectItem.lastModified)  }                                                                        
                                     </Col>
