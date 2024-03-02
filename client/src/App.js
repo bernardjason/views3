@@ -11,6 +11,8 @@ import Navbar from 'react-bootstrap/Navbar';
 import useFileLogic from './useFileLogic.js';
 import {  BiRefresh} from 'react-icons/bi';
 import Flash from './Flash.js';
+import Tab from 'react-bootstrap/Tab';
+import Tabs from 'react-bootstrap/Tabs';
 
 const fileListContext = React.createContext();
 
@@ -37,6 +39,12 @@ function App() {
     setFlash({state:true,message:"refreshing..."})
     refreshFiles()
   }
+  function latestView() {
+    alert("Latest")
+  }
+  function fileView() {
+    alert("File")
+  }
 
   return (
 
@@ -58,12 +66,29 @@ function App() {
             </Nav>
           </Container>
         </Navbar>
-            { flash && <Flash duration={2000} switchedOn={setFlash} flash={flash}></Flash>}
-            <div className="App">
+        { flash && <Flash duration={2000} switchedOn={setFlash} flash={flash}></Flash>}
+   
+
+        
+        <Tabs fill defaultActiveKey="latest">
+          <Tab eventKey="latest" title="latest" >
+          <div itemID="recentFiles" className="App" >
               
               { ! tokens.isLoggedIn && <header className="App-header"> Please log in</header>}                                           
               { tokens.isLoggedIn && <RecentFileList ></RecentFileList> }    
-            </div>
+            </div>  
+          </Tab>
+          <Tab eventKey="fileView" title="File View" >
+          <div itemID="fileView" className="App" >
+              
+              { ! tokens.isLoggedIn && <header className="App-header"> Please log in</header>}                                           
+              { tokens.isLoggedIn && <FileList ></FileList> }    
+            </div>  
+          </Tab>
+        </Tabs>
+            
+  
+
     </fileListContext.Provider>
   );
 }
