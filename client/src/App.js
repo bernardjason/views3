@@ -39,12 +39,7 @@ function App() {
     setFlash({state:true,message:"refreshing..."})
     refreshFiles()
   }
-  function latestView() {
-    alert("Latest")
-  }
-  function fileView() {
-    alert("File")
-  }
+
 
   return (
 
@@ -71,7 +66,7 @@ function App() {
 
         
         <Tabs fill defaultActiveKey="latest">
-          <Tab eventKey="latest" title="latest" >
+          <Tab eventKey="latest" title="Latest" >
           <div itemID="recentFiles" className="App" >
               
               { ! tokens.isLoggedIn && <header className="App-header"> Please log in</header>}                                           

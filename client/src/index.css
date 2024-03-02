@@ -34,6 +34,13 @@ code {
   
 }
 
+
+/* better for chrome */
+.modaltitle {
+  overflow-wrap: anywhere; 
+}
+
+
 @media screen and (max-width:480px) {
   .small-modal {
     width: 90% !important;  

@@ -6,12 +6,13 @@ import Container from 'react-bootstrap/Container';
 import {Row,Col} from 'react-bootstrap';
 
 
+import onClickS3Object from './openS3Object.js';
 
 import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
 import Image from 'react-bootstrap/Image';
 import {  signUrl } from './S3AllObjects.js';
 import { BiFullscreen, BiFolder , BiDownArrow , BiUpArrow , BiFileBlank} from 'react-icons/bi';
+import OpenModals from './OpenModals.js';
 
 function FileList() {
 
@@ -24,81 +25,6 @@ function FileList() {
     const [sortFlip , setSortFlip] = useState(true)
     
   
-    function onClickS3Object(what, destination, key,big) {
-        if (key.endsWith(".png") || key.endsWith(".jpg") ) {
-            
-            signUrl(s3client, key, bucket.bucket, 30, (url) => {
-                console.log(url)
-                for(let t of document.getElementsByClassName("modalview")) {
-                    t.innerHTML = `<image class="imageSelected" src=${url}></image>`                            
-                }
-                for(let i of document.getElementsByClassName("modaltitle")) {
-                    i.innerText=key.replace(bucket.prefix,"")                    
-                }
-            }
-            )
-            if ( big ) {
-                setFullscreenModal(true)
-                
-            } else {
-                setNormalModal(true)
-            }
-            
-        } else if (key.endsWith(".mp4")  ) {
-            
-            // looks like browser cannot play original file but downloaded it plays fine
-            // ffmpeg -i fred.mp4 -vf scale=1280:720 -r 8 8smaller.mp4
-
-            signUrl(s3client, key, bucket.bucket, 900, (url) => {
-                
-                console.log(url)
-                for(let t of document.getElementsByClassName("modalview")) {
-                    t.innerHTML = `
-                    <video class="playvideo" controls>
-                        <source  type="video/mp4"   src="${url}"    ></source>
-                    </video>                                    
-                    `
-                    //  cannot get a good download video link <a href="${url}"  download>CLICK TO DOWNLOAD!!!!</a> 
-                }
-    
-
-                for(let i of document.getElementsByClassName("modaltitle")) {
-                    i.innerText=key.replace(bucket.prefix,"")                    
-                }
-            }
-            )
-            if ( big ) {
-                setFullscreenModal(true)
-                
-            } else {
-                setNormalModal(true)
-            }
-            
-        }  else if (key.endsWith("/")) {
-            bucket.prefix = key
-            changeUpdateDirectoryList()
-
-        } else if (key.endsWith(".txt")) {
-            signUrl(s3client, key, bucket.bucket, 30, (url) => {
-                console.log(url)
-                for(let t of document.getElementsByClassName("modalview")) {
-                    t.innerHTML = `<iframe src=${url}></iframe>`                            
-                }
-                for(let i of document.getElementsByClassName("modaltitle")) {
-                    i.innerText=key                    
-                }
-            })
-            if ( big ) {
-                setFullscreenModal(true)
-                
-            } else {
-                setNormalModal(true)
-            }
-        } else {
-            alert(what)
-        }
-    }
-
     function epochToString(e) {
         var date = new Date(parseInt(e));
         
@@ -257,7 +183,8 @@ function FileList() {
                                 
                                 <Col style={{display:'flex', textOverflow:'ellipsis' , overflow:'hidden' }} >
                                     { (! isMobile &&   ! objectItem.key.endsWith("/")) && 
-                                        <Button size="lg" variant="link" onClick={() => onClickS3Object(objectItem.content, "image" + objectItem.key, objectItem.key,true)}>
+                                        <Button size="lg" variant="link" onClick={() => onClickS3Object(objectItem.content, objectItem.key,true,
+                                            s3client , bucket, setFullscreenModal , setNormalModal , changeUpdateDirectoryList)}>
                                             <BiFullscreen size={"40"}></BiFullscreen>                                        
                                             </Button>
                                     }   
@@ -266,7 +193,8 @@ function FileList() {
 
                                     {
                                         icons.get(objectItem.key)  && <Image 
-                                            onClick={() => onClickS3Object(objectItem.content, "image" + objectItem.key, objectItem.key,false)}
+                                            onClick={() => onClickS3Object(objectItem.content, objectItem.key,false,
+                                                s3client , bucket, setFullscreenModal , setNormalModal , changeUpdateDirectoryList)}
                                             src={icons.get(objectItem.key)} width={"100px"}thumbnail />
                                     }
                                     {
@@ -276,7 +204,8 @@ function FileList() {
                                     
 
                                     <Button variant="link" 
-                                        onClick={() => onClickS3Object(objectItem.content, "image" + objectItem.key, objectItem.key,false)}
+                                        onClick={() => onClickS3Object(objectItem.content, objectItem.key,false,
+                                            s3client , bucket, setFullscreenModal , setNormalModal , changeUpdateDirectoryList)}
                                          
                                         >
                                         { objectItem.key.endsWith("/") && <div><BiFolder></BiFolder> {objectItem.key}</div> }
@@ -304,26 +233,13 @@ function FileList() {
               
                 </Container>
 
+                    <OpenModals normalModal={normalModal} setNormalModal ={setNormalModal} fullscreenModal={fullscreenModal} 
+                                setFullscreenModal={setFullscreenModal} ></OpenModals>
 
                 </div>
 
 
-                <Modal dialogClassName="small-modal" id="modaldialog"  fullscreen={false} show={normalModal} centered={true} onHide={() => setNormalModal(false)}>
-                    <Modal.Header closeButton>
-                    <Modal.Title className="modaltitle">Modal</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body><div className="modalview 	.modal-sm"></div></Modal.Body>
-                </Modal>
 
-                <Modal dialogClassName="large-modal" show={fullscreenModal} centered={true} 
-                    fullscreen={false}
-                    onHide={() => setFullscreenModal(false)}>
-                    <Modal.Header closeButton>
-                    <Modal.Title><div className="modaltitle"></div></Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body><div className="modalview"></div></Modal.Body>
-
-                </Modal>
   
 
 
