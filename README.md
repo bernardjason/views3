@@ -19,11 +19,11 @@ An AWS stack is deployed that:
 ## using pipeline
 ***You need to take a fork of the code as the pipeline will be triggered by your github repository***
 
-From the aws console eu-west-2 as admin create a cloudformation stack
+From the aws console eu-west-2 as admin create a cloudformation stack using
 
-[from yaml configuration](pipeline.yaml)
+[pipeline.yaml](pipeline.yaml)
 
-You will need to have forked this project as the pipeline will need to setup a connection to access the forked code
+You will need to have forked this github project as the pipeline will need to setup a connection to access the code
 
 |cdk parameter|description|
 | -------- | ------- |
