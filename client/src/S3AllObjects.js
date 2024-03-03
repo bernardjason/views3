@@ -7,8 +7,11 @@ const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 
 
 
-async function S3AllObjects(s3client, setCompleteFileList, bucket, prefix,setFlash) {
+async function S3AllObjects(s3client, setCompleteFileList, setRecentFileList, bucket, prefix,setFlash) {
     const files = new Map();
+    const recentFiles = [];
+    const last24Hours = Date.now() - 1000*60*60*24
+
     
     let previousDirectory = "/"
     files.set(previousDirectory, []);
@@ -49,8 +52,13 @@ async function S3AllObjects(s3client, setCompleteFileList, bucket, prefix,setFla
                                     
                                 files.set(directory,current)
                             }
-                        }                
+                        }      
+                                  
                     }
+                    const lastModified = parseInt(record.lastModified)
+                    if ( lastModified >= last24Hours) {
+                        recentFiles.push(record)
+                    }  
                     current.push(record);
                 }
             ) 
@@ -80,11 +88,21 @@ async function S3AllObjects(s3client, setCompleteFileList, bucket, prefix,setFla
         console.log(`seconds elapsed = ${millis / 1000} Chunk processed ${max}`)
                 
         //files.delete("/") // I dont want root to be available.
+
         /*
         for(let k of files.keys() ) {
-            console.log(`${JSON.stringify(files.get(k))}`)
+            
+            for ( let folder of files.get(k)) {
+
+                const lastModified = parseInt(folder.lastModified)
+                if ( lastModified >= last24Hours) {
+                    console.log(`XXXXXXXXXXXX k ${lastModified}  ${Date.now()}  ${JSON.stringify(folder)}`)
+                    recentFiles.push(folder)
+                }                
+            }
         }
         */
+        setRecentFileList(recentFiles)        
         setFlash({state:false})
         setCompleteFileList(files)       
     } catch (error) {

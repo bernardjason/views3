@@ -18,7 +18,7 @@
 .navbar,
 .nav,
 .navbar-default {
-    margin: 1px;
+    margin: 0px;
     padding: 2px;
     word-wrap: break-word !important;
 }
@@ -32,6 +32,13 @@
 
 .row {
   padding-bottom: 20px;
+  
+}
+
+.desktop-row {
+  display:flex;
+  overflow:'hidden';  
+  text-overflow: hidden;  
 }
 
 .App-header {
@@ -45,4 +52,25 @@
 
 }
 
+.nav-tabs {
+  border-color: #fff !important;
+}
+
+.nav-tabs .nav-link {
+  color: gray !important;
+  padding-top: 12px;
+  background-color: #efefef !important;
+  margin-top: 10px;
+  border-bottom-color: #0074d9 !important;
+  
+}
+
+.nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active {
+  color: black !important;  
+  border-color: #0074d9 !important;
+  border-width: 2px;
+  border-bottom: none;
+  background-color: #fff!important;
+  
+}
 

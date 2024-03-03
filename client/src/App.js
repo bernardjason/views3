@@ -1,6 +1,7 @@
 import './App.css';
 import React, {  useState  } from "react";
 import {FileList,} from './FileList.js'
+import RecentFileList from './RecentFileList.js';
 import {Login, authenticateWithCognito, logoutFromCognito}  from './Login.js';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Container from 'react-bootstrap/Container';
@@ -10,6 +11,8 @@ import Navbar from 'react-bootstrap/Navbar';
 import useFileLogic from './useFileLogic.js';
 import {  BiRefresh} from 'react-icons/bi';
 import Flash from './Flash.js';
+import Tab from 'react-bootstrap/Tab';
+import Tabs from 'react-bootstrap/Tabs';
 
 const fileListContext = React.createContext();
 
@@ -25,7 +28,7 @@ function App() {
  
   Login(setTokens,setS3Client,setBucketList,setBucket);
 
-  const [goUpToParent, changeUpdateDirectoryList , refreshFiles , fileList] = useFileLogic(s3client ,bucketList[0],bucket,setFlash)
+  const [goUpToParent, changeUpdateDirectoryList , refreshFiles , fileList , recentFileList] = useFileLogic(s3client ,bucketList[0],bucket,setFlash)
 
   function logout() {
     setTokens( { isLoggedIn:false} )
@@ -37,9 +40,10 @@ function App() {
     refreshFiles()
   }
 
+
   return (
 
-    <fileListContext.Provider value={ { s3client, bucket, goUpToParent, fileList , changeUpdateDirectoryList , refreshFiles} }>
+    <fileListContext.Provider value={ { s3client, bucket, goUpToParent, fileList , changeUpdateDirectoryList , refreshFiles , recentFileList} }>
        
         <Navbar bg="primary" data-bs-theme="dark">
           
@@ -57,12 +61,29 @@ function App() {
             </Nav>
           </Container>
         </Navbar>
-            { flash && <Flash duration={2000} switchedOn={setFlash} flash={flash}></Flash>}
-            <div className="App">
+        { flash && <Flash duration={2000} switchedOn={setFlash} flash={flash}></Flash>}
+   
+
+        
+        <Tabs fill defaultActiveKey="latest">
+          <Tab eventKey="latest" title="Latest" >
+          <div itemID="recentFiles" className="App" >
+              
+              { ! tokens.isLoggedIn && <header className="App-header"> Please log in</header>}                                           
+              { tokens.isLoggedIn && <RecentFileList ></RecentFileList> }    
+            </div>  
+          </Tab>
+          <Tab eventKey="fileView" title="File View" >
+          <div itemID="fileView" className="App" >
               
               { ! tokens.isLoggedIn && <header className="App-header"> Please log in</header>}                                           
               { tokens.isLoggedIn && <FileList ></FileList> }    
-            </div>
+            </div>  
+          </Tab>
+        </Tabs>
+            
+  
+
     </fileListContext.Provider>
   );
 }

@@ -1,0 +1,36 @@
+version: 0.2
+
+phases:
+  install:
+   runtime-versions:
+      nodejs: 20.x
+   commands:
+       - npm install -g aws-cdk@2.117.0
+       - npm -g install typescript@5.3.3
+  pre_build:
+   commands:
+       - echo "creating folder"
+       - echo "userName=${userName}" > cdk/views3.properties
+       - echo "userPassword=${userPassword}" >> cdk/views3.properties
+       - echo "bucketPrefix=${bucketPrefix}" >> cdk/views3.properties
+       - cdk --version  
+       - tsc --version
+  build:
+    commands:
+        - aws sts get-caller-identity
+        - cat cdk/views3.properties
+        - mkdir client/build
+        - cd cdk
+        - npm install
+        - cdk bootstrap -y
+        - npm install
+        - npm run cdk-deploy -- --require-approval never
+        - npm run parse-client
+        - npm run cognito-css
+        - cd ../client
+        - npm install
+        - npm run build
+        - cd ../cdk
+        - npm run cdk-deploy -- --require-approval never
+        - echo -e "To add a demouser run\n\n$(cat cdk-outputs.json  | jq -r ".ViewS3.demouser")\n"
+        - echo -e "Cloudfront url\n\n$(cat cdk-outputs.json  | jq -r ".ViewS3.displayurl")\n"

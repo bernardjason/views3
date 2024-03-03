@@ -5,6 +5,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
 }
 
 code {
@@ -32,6 +33,13 @@ code {
   max-width: 40% !important;
   
 }
+
+
+/* better for chrome */
+.modaltitle {
+  overflow-wrap: anywhere; 
+}
+
 
 @media screen and (max-width:480px) {
   .small-modal {

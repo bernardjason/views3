@@ -56,7 +56,8 @@ export class CdkStack extends cdk.Stack {
     new cdk.CfnOutput(this, 'userMappedToBucketOutput',{ value:`const userMappedToBucket='${s3buckets.userMappedToBucket.bucketName}'`})
     new cdk.CfnOutput(this, 'elasticIp',{ value:`${serverResources.elasticIp.attrPublicIp}`})
     new cdk.CfnOutput(this, 'cloudfront',{ value:`https://${cloudfront.cloudfront.cloudFrontWebDistribution.distributionDomainName}`})
-  
+    new cdk.CfnOutput(this, 'demouser', { value:`aws cognito-idp admin-create-user --user-pool-id ${cognito.userpool.userPoolId} --username demoman --user-attributes Name=profile,Value=thedemo  --temporary-password 'HelloBernard1'`})
+    new cdk.CfnOutput(this, 'displayurl',{ value:`https://${cloudfront.cloudfront.cloudFrontWebDistribution.domainName}/`})
   }
 
 
