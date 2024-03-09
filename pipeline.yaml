@@ -5,6 +5,7 @@ Description: views3 pipeline
 Parameters:
   GitHubRepo:
     Type: String
+    Default: <REPLACE WITH YOUR PREFIX>/views3
 
   GitHubBranch:
     Type: String
@@ -16,15 +17,13 @@ Parameters:
   CdkCameraUserNames:
     Type: String
     Description: <username>,<group name>| as many as needed
+    Default: camera1,thedemo|camera2,thedemo|other,theothers
 
   CdkCameraDefaultPassword:
     Type: String
     Description: initial password for camera. Sorry sigle password for now
+    Default: "!HelloDemo2000"
   
-  CdkViewS3BucketPrefix:
-    Type: String
-    Description: initial prefix for the buckets created. Must make buckets unique
-
 
 Resources:
 
@@ -224,7 +223,7 @@ Resources:
           Value: !Ref CdkCameraDefaultPassword
         - Name: bucketPrefix
           Type: PLAINTEXT
-          Value: !Ref CdkViewS3BucketPrefix
+          Value: !Join [ "-" , [!Ref AWS::StackName , !Select [ 0 , !Split [ '-' , !Select [2, !Split ['/', !Ref AWS::StackId]]  ]]]]
       Name: !Sub '${AWS::StackName}-BuildDeploy'
       ServiceRole: !Ref CodeBuildServiceRole
 
@@ -238,10 +237,6 @@ Resources:
       ArtifactStore:
         Type: S3
         Location: !Ref ArtifactBucket
-      DisableInboundStageTransitions: 
-        -
-          Reason: just for a demo
-          StageName: Demo
       Stages:
         - Name: Source
           Actions:
