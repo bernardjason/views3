@@ -27,7 +27,7 @@ The main CDK stack:
 
 rough youtube video deploying with pipeline 
 
-[![YOUTUBE](/docs/youtube.png)](https://youtu.be/occbs4_J2_4 )
+[![YOUTUBE](/docs/youtube.png)](https://youtu.be/bfQYMX21ebM )
 
 From the aws console eu-west-2 as admin create a cloudformation stack using
 
