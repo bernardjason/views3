@@ -4,7 +4,7 @@ This project allows multiple security cameras and groups of users to log onto a 
 
 ***deploying this project will incur costs on AWS, it is not free***
 
-This is a home project, design decisions are to keep it cheap. If you try this project there will be charges on your AWS account. I found cost per day was approximately $0.50
+This is a home project, design decisions are to keep it cheap. If you try this project there will be charges on your AWS account. I found cost per day averaged $0.12 
 
 <img src="docs/1.png" alt="alt text" width="40%"/> <img src="docs/2.png" alt="alt text" width="40%"/> <img src="docs/3.png" alt="alt text" width="40%"/>
 
