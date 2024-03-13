@@ -150,3 +150,24 @@ aws cognito-idp admin-create-user --user-pool-id <pool id>--username demoman --u
 
 
 <img src="docs/examples.png" >
+
+
+## rough flow of gui logic
+
+log in using a previously created Cognito user pool id
+
+the Cognito id has an attribute **profile**  that is used to find in the *cdk-folder-mapped folder a file which defines which S3 bucket your data is in. The file contains a single line with the bucket name (no S3:// required)
+
+the web GUI then uses AWS SDK to query the S3 bucket
+s3://*cdk-folder-user/**profile**/
+
+The GUI expects there to be sets of files
+
+ftps1_00_20240309160304-scaled.mp4
+
+and
+
+ftps1_00_20240309160304-icon.mp4
+
+
+These files are uploaded by the ec2. The ec2 will receive via ftp files, either jpg or mp4. The mp4 it processes with ffmpeg to ensure the video plays on the browser. The ec2 will create an icon of the jpg/mp4 for the GUI to use
